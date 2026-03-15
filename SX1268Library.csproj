@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>SX1268Library</Title>
+    <PackageProjectUrl>https://gitlab.com/cnzkn/SX1268Library</PackageProjectUrl>
+    <RepositoryUrl>https://gitlab.com/cnzkn/SX1268Library</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>sx1268,lora,iot,sx126x</PackageTags>
+    <IncludeSymbols>False</IncludeSymbols>
+    <Authors>Can Özkan</Authors>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Transmit/receive data and control SX126x devices in C#.</Description>
+    <Version>1.0.3</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Device.Gpio" Version="4.0.1" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

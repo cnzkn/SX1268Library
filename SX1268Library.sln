@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SX1268Library", "SX1268Library.csproj", "{97CCD9F2-813E-4611-BCD5-E0A0FD578731}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97CCD9F2-813E-4611-BCD5-E0A0FD578731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CCD9F2-813E-4611-BCD5-E0A0FD578731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CCD9F2-813E-4611-BCD5-E0A0FD578731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CCD9F2-813E-4611-BCD5-E0A0FD578731}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {485DB677-52D0-4FF0-817F-F171988C8F48}
+	EndGlobalSection
+EndGlobal
