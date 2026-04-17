@@ -21,6 +21,9 @@ public class SemaphoreLock : IDisposable
     }
 }
 
+/// <summary>
+/// Wrapper class for semaphore/synchronization operations.
+/// </summary>
 public class SemaphoreWrapper : IDisposable
 {
     private readonly SemaphoreSlim _semaphore;

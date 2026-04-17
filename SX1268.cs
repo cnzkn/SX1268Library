@@ -1,20 +1,38 @@
-using System.Device.Gpio;
-using System.IO.Ports;
-using System.Text;
-
 namespace SX1268Library;
 
 public enum OperationMode
 {
+    /// <summary>
+    /// Module is in data transmission/reception mode.
+    /// </summary>
     Transmission,
+    
+    /// <summary>
+    /// Module is in configuration mode.
+    /// </summary>
     Configuration,
+    
+    /// <summary>
+    /// Module is in wake-on-radio mode, which the module sleeps until a message is received.
+    /// </summary>
     WakeOnRadio,
+    
+    /// <summary>
+    /// Module is in deep sleep mode.
+    /// </summary>
     DeepSleep
 }
 
 public class LoraMessageReceivedEventArgs(byte[] payload, int? packetRssi = null) : EventArgs
 {
+    /// <summary>
+    /// Received payload.
+    /// </summary>
     public byte[] Payload { get; } = payload;
+    
+    /// <summary>
+    /// RSSI value of the packet, if enabled.
+    /// </summary>
     public int? PacketRssi { get; } = packetRssi;
 }
 
@@ -26,8 +44,14 @@ public class SX1268 : IDisposable
     private static readonly byte[] VersionRequestMagic = [0xC1, 0x80, 0x07];
     private static readonly byte[] GetParametersMagic  = [0xC1, 0x00, 0x09];
 
+    /// <summary>
+    /// Configuration of the module.
+    /// </summary>
     public SX1268Configuration Configuration { get; } = new();
 
+    /// <summary>
+    /// Raises when a message is received. The event arguments contain the payload and, if enabled, the packet RSSI value.
+    /// </summary>
     public event EventHandler<LoraMessageReceivedEventArgs>? DataReceived;
 
     private readonly GpioController _gpioController;
@@ -59,6 +83,12 @@ public class SX1268 : IDisposable
     /// <returns>A <see cref="SX1268"/> instance.</returns>
     public static SX1268 CreateJetsonAlternative(string portName) => new(portName, 85, 122);
 
+    /// <summary>
+    /// Creates an instance of SX126x module controller.
+    /// </summary>
+    /// <param name="portName">Name of the port which the device is exposed to.</param>
+    /// <param name="m0Pin">GPIO pin which M0 is connected to.</param>
+    /// <param name="m1Pin">GPIO pin which M1 is connected to.</param>
     public SX1268(string portName, int m0Pin, int m1Pin)
     {
         M0Pin = m0Pin;
@@ -84,11 +114,19 @@ public class SX1268 : IDisposable
         GetConfiguration();
     }
 
+    /// <summary>
+    /// Creates an instance of SX126x module controller.
+    /// </summary>
+    /// <param name="portName">Name of the port which the device is exposed to.</param>
+    /// <param name="m0Pin">GPIO pin which M0 is connected to.</param>
+    /// <param name="m1Pin">GPIO pin which M1 is connected to.</param>
+    /// <param name="configuration">Initial module configuration.</param>
     public SX1268(string portName, int m0Pin, int m1Pin, SX1268Configuration configuration) : this(portName, m0Pin, m1Pin)
     {
         SetConfiguration(configuration);
     }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -99,6 +137,11 @@ public class SX1268 : IDisposable
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Changes the operation mode of the module.
+    /// </summary>
+    /// <param name="mode">New operation mode.</param>
+    /// <exception cref="NotImplementedException">Thrown when the given mode is not recognized.</exception>
     public void SetOperationMode(OperationMode mode)
     {
         if (_lastMode == mode)
@@ -137,6 +180,11 @@ public class SX1268 : IDisposable
         Thread.Sleep(100);
     }
 
+    /// <summary>
+    /// Reads the module version.
+    /// </summary>
+    /// <exception cref="TimeoutException">Module failed to respond in 5 seconds.</exception>
+    /// <exception cref="NotImplementedException">Module sent unrecognized data.</exception>
     public void GetModuleVersion()
     {
         using var _ = _semaphore.LockOne();
@@ -183,6 +231,11 @@ public class SX1268 : IDisposable
         }
     }
 
+    /// <summary>
+    /// Reads module configuration.
+    /// </summary>
+    /// <exception cref="TimeoutException">Module failed to respond in 5 seconds.</exception>
+    /// <exception cref="NotImplementedException">Module sent unrecognized data.</exception>
     public void GetConfiguration()
     {
         using var _ = _semaphore.LockOne();
@@ -224,6 +277,10 @@ public class SX1268 : IDisposable
         }
     }
 
+    /// <summary>
+    /// Changes the module configuration.
+    /// </summary>
+    /// <param name="configuration">New configuration. Unspecified properties are unaffected.</param>
     public void SetConfiguration(SX1268Configuration configuration)
     {
         using var _ = _semaphore.LockOne();
@@ -264,6 +321,10 @@ public class SX1268 : IDisposable
         }
     }
 
+    /// <summary>
+    /// Writes given payload to the module.
+    /// </summary>
+    /// <param name="payload"></param>
     public void SendData(byte[] payload)
     {
         using var _ = _semaphore.LockOne();
@@ -273,6 +334,10 @@ public class SX1268 : IDisposable
         _serialPort.Write(payload, 0, payload.Length);
     }
 
+    /// <summary>
+    /// Reads the RSSI value of the channel.
+    /// </summary>
+    /// <returns></returns>
     public int? ReadChannelRssi()
     {
         using var _ = _semaphore.LockOne();
@@ -299,6 +364,9 @@ public class SX1268 : IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Starts the listener for incoming messages and event handling.
+    /// </summary>
     public void StartListening()
     {
         if (_receiveTask is { IsCompleted: false })
@@ -350,6 +418,9 @@ public class SX1268 : IDisposable
         }), _cts.Token);
     }
 
+    /// <summary>
+    /// Stops incoming message listener.
+    /// </summary>
     public void StopListening()
     {
         _cts?.Cancel();
@@ -385,11 +456,14 @@ public class SX1268 : IDisposable
         _gpioController.Dispose();
     }
 
-    public bool SafeSetConfiguration(SX1268Configuration configuration)
+    /// <summary>
+    /// Stops listener, sets module configuration and restarts listener.
+    /// </summary>
+    /// <param name="configuration">New configuration. Unchanged properties are unaffected.</param>
+    public void SafeSetConfiguration(SX1268Configuration configuration)
     {
         StopListening();
         SetConfiguration(configuration);
         StartListening();
-        return true;
     }
 }

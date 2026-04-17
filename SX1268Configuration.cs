@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace SX1268Library;
 
 public class SX1268Configuration
@@ -28,6 +26,7 @@ public class SX1268Configuration
     public ModuleWorMode? WorMode { get; set; }
     public ModuleWakeOnRadioRate? WorRate { get; set; }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -56,6 +55,10 @@ public class SX1268Configuration
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Loads module configuration from given byte array.
+    /// </summary>
+    /// <param name="reg">Array of bytes representing module configuration.</param>
     public void FromByteArray(byte[] reg)
     {
         Address = (short)((reg[3] << 8) | reg[4]);
@@ -76,6 +79,11 @@ public class SX1268Configuration
         EncryptionKey = (short)((reg[10] << 8) | reg[11]);
     }
 
+    /// <summary>
+    /// Serializes module configuration into byte array format suitable for writing to the device.
+    /// </summary>
+    /// <returns>An array of bytes representing the module configuration.</returns>
+    /// <exception cref="ArgumentNullException">A required property was <see langword="null"/>.</exception>
     public byte[] ToByteArray()
     {
         if (!Channel.HasValue) throw new ArgumentNullException(nameof(Channel));
@@ -115,6 +123,10 @@ public class SX1268Configuration
         return reg;
     }
 
+    /// <summary>
+    /// Applies properties from specified configuration, skipping unspecified properties.
+    /// </summary>
+    /// <param name="other">Other instance of configuration.</param>
     public void ApplyChanges(SX1268Configuration other)
     {
         if (other.Channel.HasValue) Channel = other.Channel.Value;
@@ -149,32 +161,37 @@ public class SX1268Configuration
             0x22 => // E22
                 DeviceFrequency switch
                 {
-                    ModuleFrequency.FREQ_400MHZ or ModuleFrequency.FREQ_433MHZ => power switch
-                    {
-                        22 => SX1268Library.ModuleType.MODULE_E22400T22S,
-                        30 => SX1268Library.ModuleType.MODULE_E22400T30S,
-                        _ => SX1268Library.ModuleType.Unknown
-                    },
-                    ModuleFrequency.FREQ_230MHZ => power switch
-                    {
-                        22 => SX1268Library.ModuleType.MODULE_E22230T22S,
-                        30 => SX1268Library.ModuleType.MODULE_E22230T30S,
-                        _ => SX1268Library.ModuleType.Unknown
-                    },
-                    ModuleFrequency.FREQ_900MHZ => power switch
-                    {
-                        22 => SX1268Library.ModuleType.MODULE_900900T22S,
-                        30 => SX1268Library.ModuleType.MODULE_900900T30S,
-                        _ => SX1268Library.ModuleType.Unknown
-                    },
-                    _ => ModuleType
+                    ModuleFrequency.FREQ_400MHZ or ModuleFrequency.FREQ_433MHZ => 
+                        power switch
+                        {
+                            22 => SX1268Library.ModuleType.MODULE_E22400T22S,
+                            30 => SX1268Library.ModuleType.MODULE_E22400T30S,
+                            _ => SX1268Library.ModuleType.Unknown
+                        },
+                    
+                    ModuleFrequency.FREQ_230MHZ => 
+                        power switch
+                        {
+                            22 => SX1268Library.ModuleType.MODULE_E22230T22S,
+                            30 => SX1268Library.ModuleType.MODULE_E22230T30S,
+                            _ => SX1268Library.ModuleType.Unknown
+                        },
+                    
+                    ModuleFrequency.FREQ_900MHZ => 
+                        power switch
+                        {
+                            22 => SX1268Library.ModuleType.MODULE_900900T22S,
+                            30 => SX1268Library.ModuleType.MODULE_900900T30S,
+                            _ => SX1268Library.ModuleType.Unknown
+                        },
+                    
+                    _ => SX1268Library.ModuleType.Unknown
                 },
 
             0x90 => // E90
                 DeviceFrequency switch
                 {
-                    ModuleFrequency.FREQ_400MHZ or ModuleFrequency.FREQ_433MHZ => SX1268Library.ModuleType
-                        .MODULE_E90DTU400SL37,
+                    ModuleFrequency.FREQ_400MHZ or ModuleFrequency.FREQ_433MHZ => SX1268Library.ModuleType.MODULE_E90DTU400SL37,
                     ModuleFrequency.FREQ_230MHZ => SX1268Library.ModuleType.MODULE_E90DTU230SL37,
                     _ => SX1268Library.ModuleType.Unknown
                 },
