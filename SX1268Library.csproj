@@ -10,12 +10,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>sx1268,lora,iot,sx126x</PackageTags>
     <IncludeSymbols>False</IncludeSymbols>
-    <Authors>Can Özkan</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Transmit/receive data and control SX126x devices in C#.</Description>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -120,6 +120,51 @@ public class SX1268 : IDisposable
     /// <param name="portName">Name of the port which the device is exposed to.</param>
     /// <param name="m0Pin">GPIO pin which M0 is connected to.</param>
     /// <param name="m1Pin">GPIO pin which M1 is connected to.</param>
+    /// <param name="gpioController">The GPIO controller to control operation mode of the module.</param>
+    public SX1268(string portName, int m0Pin, int m1Pin, GpioController gpioController)
+    {
+        M0Pin = m0Pin;
+        M1Pin = m1Pin;
+
+        _semaphore = new SemaphoreWrapper(1, 1);
+        _gpioController = gpioController;
+        _gpioController.OpenPin(M0Pin, PinMode.Output);
+        _gpioController.OpenPin(M1Pin, PinMode.Output);
+
+        SetOperationMode(OperationMode.DeepSleep);
+
+        _serialPort = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One)
+        {
+            ReadTimeout = 1000,
+            WriteTimeout = 1000
+        };
+
+        _serialPort.Open();
+        _serialPort.DiscardInBuffer();
+
+        GetModuleVersion();
+        GetConfiguration();
+    }
+
+    /// <summary>
+    /// Creates an instance of SX126x module controller.
+    /// </summary>
+    /// <param name="portName">Name of the port which the device is exposed to.</param>
+    /// <param name="m0Pin">GPIO pin which M0 is connected to.</param>
+    /// <param name="m1Pin">GPIO pin which M1 is connected to.</param>
+    /// <param name="gpioController">The GPIO controller to control operation mode of the module.</param>
+    /// <param name="configuration">Initial module configuration.</param>
+    public SX1268(string portName, int m0Pin, int m1Pin, GpioController gpioController, SX1268Configuration configuration) : this(portName, m0Pin, m1Pin, gpioController)
+    {
+        SetConfiguration(configuration);
+    }
+    
+    /// <summary>
+    /// Creates an instance of SX126x module controller.
+    /// </summary>
+    /// <param name="portName">Name of the port which the device is exposed to.</param>
+    /// <param name="m0Pin">GPIO pin which M0 is connected to.</param>
+    /// <param name="m1Pin">GPIO pin which M1 is connected to.</param>
     /// <param name="configuration">Initial module configuration.</param>
     public SX1268(string portName, int m0Pin, int m1Pin, SX1268Configuration configuration) : this(portName, m0Pin, m1Pin)
     {
